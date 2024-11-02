@@ -12,7 +12,8 @@ namespace AsmResolver.DotNet.Signatures
         IEqualityComparer<GenericInstanceMethodSignature>
     {
         /// <inheritdoc />
-        public bool Equals(CallingConventionSignature? x, CallingConventionSignature? y)
+        public bool Equals(CallingConventionSignature? x, CallingConventionSignature? y) => Equals(x, y, default, default);
+        public bool Equals(CallingConventionSignature? x, CallingConventionSignature? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
@@ -21,10 +22,10 @@ namespace AsmResolver.DotNet.Signatures
 
             return x switch
             {
-                LocalVariablesSignature localVarSig => Equals(localVarSig, y as LocalVariablesSignature),
-                FieldSignature fieldSig => Equals(fieldSig, y as FieldSignature),
-                MethodSignature methodSig => Equals(methodSig, y as MethodSignature),
-                PropertySignature propertySig => Equals(propertySig, y as PropertySignature),
+                LocalVariablesSignature localVarSig => Equals(localVarSig, y as LocalVariablesSignature, xContext, yContext),
+                FieldSignature fieldSig => Equals(fieldSig, y as FieldSignature, xContext, yContext),
+                MethodSignature methodSig => Equals(methodSig, y as MethodSignature, xContext, yContext),
+                PropertySignature propertySig => Equals(propertySig, y as PropertySignature, xContext, yContext),
                 _ => false
             };
         }
@@ -43,7 +44,8 @@ namespace AsmResolver.DotNet.Signatures
         }
 
         /// <inheritdoc />
-        public bool Equals(FieldSignature? x, FieldSignature? y)
+        public bool Equals(FieldSignature? x, FieldSignature? y) => Equals(x, y, default, default);
+        public bool Equals(FieldSignature? x, FieldSignature? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
@@ -51,7 +53,7 @@ namespace AsmResolver.DotNet.Signatures
                 return false;
 
             return x.Attributes == y.Attributes
-                   && Equals(x.FieldType, y.FieldType);
+                   && Equals(x.FieldType, y.FieldType, xContext, yContext);
         }
 
         /// <inheritdoc />
@@ -66,7 +68,8 @@ namespace AsmResolver.DotNet.Signatures
         }
 
         /// <inheritdoc />
-        public bool Equals(MethodSignature? x, MethodSignature? y)
+        public bool Equals(MethodSignature? x, MethodSignature? y) => Equals(x, y, default, default);
+        public bool Equals(MethodSignature? x, MethodSignature? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
@@ -75,9 +78,9 @@ namespace AsmResolver.DotNet.Signatures
 
             return x.Attributes == y.Attributes
                    && x.GenericParameterCount == y.GenericParameterCount
-                   && Equals(x.ReturnType, y.ReturnType)
-                   && Equals(x.ParameterTypes, y.ParameterTypes)
-                   && Equals(x.SentinelParameterTypes, y.SentinelParameterTypes);
+                   && Equals(x.ReturnType, y.ReturnType, xContext, yContext)
+                   && Equals(x.ParameterTypes, y.ParameterTypes, xContext, yContext)
+                   && Equals(x.SentinelParameterTypes, y.SentinelParameterTypes, xContext, yContext);
         }
 
         /// <inheritdoc />
@@ -95,7 +98,8 @@ namespace AsmResolver.DotNet.Signatures
         }
 
         /// <inheritdoc />
-        public bool Equals(LocalVariablesSignature? x, LocalVariablesSignature? y)
+        public bool Equals(LocalVariablesSignature? x, LocalVariablesSignature? y) => Equals(x, y, default, default);
+        public bool Equals(LocalVariablesSignature? x, LocalVariablesSignature? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
@@ -103,7 +107,7 @@ namespace AsmResolver.DotNet.Signatures
                 return false;
 
             return x.Attributes == y.Attributes
-                   && Equals(x.VariableTypes, y.VariableTypes);
+                   && Equals(x.VariableTypes, y.VariableTypes, xContext, yContext);
         }
 
         /// <inheritdoc />
@@ -118,7 +122,8 @@ namespace AsmResolver.DotNet.Signatures
         }
 
         /// <inheritdoc />
-        public bool Equals(GenericInstanceMethodSignature? x, GenericInstanceMethodSignature? y)
+        public bool Equals(GenericInstanceMethodSignature? x, GenericInstanceMethodSignature? y) => Equals(x, y, default, default);
+        public bool Equals(GenericInstanceMethodSignature? x, GenericInstanceMethodSignature? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
@@ -126,7 +131,7 @@ namespace AsmResolver.DotNet.Signatures
                 return false;
 
             return x.Attributes == y.Attributes
-                   && Equals(x.TypeArguments, y.TypeArguments);
+                   && Equals(x.TypeArguments, y.TypeArguments, xContext, yContext);
         }
 
         /// <inheritdoc />
@@ -141,7 +146,8 @@ namespace AsmResolver.DotNet.Signatures
         }
 
         /// <inheritdoc />
-        public bool Equals(PropertySignature? x, PropertySignature? y)
+        public bool Equals(PropertySignature? x, PropertySignature? y) => Equals(x, y, default, default);
+        public bool Equals(PropertySignature? x, PropertySignature? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
@@ -149,8 +155,8 @@ namespace AsmResolver.DotNet.Signatures
                 return false;
 
             return x.Attributes == y.Attributes
-                   && Equals(x.ReturnType, y.ReturnType)
-                   && Equals(x.ParameterTypes, y.ParameterTypes);
+                   && Equals(x.ReturnType, y.ReturnType, xContext, yContext)
+                   && Equals(x.ParameterTypes, y.ParameterTypes, xContext, yContext);
         }
 
         /// <inheritdoc />

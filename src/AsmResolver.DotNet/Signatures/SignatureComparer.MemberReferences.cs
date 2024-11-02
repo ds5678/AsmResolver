@@ -10,7 +10,8 @@ namespace AsmResolver.DotNet.Signatures
         IEqualityComparer<MethodSpecification>
     {
         /// <inheritdoc />
-        public bool Equals(MemberReference? x, MemberReference? y)
+        public bool Equals(MemberReference? x, MemberReference? y) => Equals(x, y, default, default);
+        public bool Equals(MemberReference? x, MemberReference? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
@@ -18,9 +19,9 @@ namespace AsmResolver.DotNet.Signatures
                 return false;
 
             if (x.IsMethod)
-                return Equals((IMethodDescriptor) x, y);
+                return Equals((IMethodDescriptor) x, y, xContext, yContext);
             if (y.IsField)
-                return Equals((IFieldDescriptor) x, y);
+                return Equals((IFieldDescriptor) x, y, xContext, yContext);
             return false;
         }
 
@@ -35,7 +36,8 @@ namespace AsmResolver.DotNet.Signatures
         }
 
         /// <inheritdoc />
-        public bool Equals(IMethodDescriptor? x, IMethodDescriptor? y)
+        public bool Equals(IMethodDescriptor? x, IMethodDescriptor? y) => Equals(x, y, default, default);
+        public bool Equals(IMethodDescriptor? x, IMethodDescriptor? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
@@ -43,11 +45,11 @@ namespace AsmResolver.DotNet.Signatures
                 return false;
 
             if (x is MethodSpecification specification)
-                return Equals(specification, y as MethodSpecification);
+                return Equals(specification, y as MethodSpecification, xContext, yContext);
 
             return x.Name == y.Name
-                   && Equals(x.DeclaringType, y.DeclaringType)
-                   && Equals(x.Signature, y.Signature);
+                   && Equals(x.DeclaringType, y.DeclaringType, xContext, yContext)
+                   && Equals(x.Signature, y.Signature, xContext, yContext);
         }
 
         /// <inheritdoc />
@@ -63,7 +65,8 @@ namespace AsmResolver.DotNet.Signatures
         }
 
         /// <inheritdoc />
-        public bool Equals(IFieldDescriptor? x, IFieldDescriptor? y)
+        public bool Equals(IFieldDescriptor? x, IFieldDescriptor? y) => Equals(x, y, default, default);
+        public bool Equals(IFieldDescriptor? x, IFieldDescriptor? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
@@ -71,8 +74,8 @@ namespace AsmResolver.DotNet.Signatures
                 return false;
 
             return x.Name == y.Name
-                   && Equals(x.DeclaringType, y.DeclaringType)
-                   && Equals(x.Signature, y.Signature);
+                   && Equals(x.DeclaringType, y.DeclaringType, xContext, yContext)
+                   && Equals(x.Signature, y.Signature, xContext, yContext);
         }
 
         /// <inheritdoc />
@@ -88,15 +91,16 @@ namespace AsmResolver.DotNet.Signatures
         }
 
         /// <inheritdoc />
-        public bool Equals(MethodSpecification? x, MethodSpecification? y)
+        public bool Equals(MethodSpecification? x, MethodSpecification? y) => Equals(x, y, default, default);
+        public bool Equals(MethodSpecification? x, MethodSpecification? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
             if (x is null || y is null)
                 return false;
 
-            return Equals(x.Method, y.Method)
-                   && Equals(x.Signature, y.Signature);
+            return Equals(x.Method, y.Method, xContext, yContext)
+                   && Equals(x.Signature, y.Signature, xContext, yContext);
         }
 
         /// <inheritdoc />

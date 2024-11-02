@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using AsmResolver.PE.DotNet.Metadata.Tables;
+using System.Collections.Generic;
 
 namespace AsmResolver.DotNet.Signatures
 {
@@ -13,7 +13,8 @@ namespace AsmResolver.DotNet.Signatures
         IEqualityComparer<InvalidTypeDefOrRef>
     {
         /// <inheritdoc />
-        public bool Equals(ITypeDescriptor? x, ITypeDescriptor? y)
+        public bool Equals(ITypeDescriptor? x, ITypeDescriptor? y) => Equals(x, y, default, default);
+        public bool Equals(ITypeDescriptor? x, ITypeDescriptor? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
@@ -23,9 +24,9 @@ namespace AsmResolver.DotNet.Signatures
             return x switch
             {
                 InvalidTypeDefOrRef invalidType => Equals(invalidType, y as InvalidTypeDefOrRef),
-                TypeSpecification specification => Equals(specification, y as TypeSpecification),
-                TypeSignature signature => Equals(signature, y as TypeSignature),
-                _ => SimpleTypeEquals(x, y)
+                TypeSpecification specification => Equals(specification, y as TypeSpecification, xContext, yContext),
+                TypeSignature signature => Equals(signature, y as TypeSignature, xContext, yContext),
+                _ => SimpleTypeEquals(x, y, xContext, yContext)
             };
         }
 
@@ -49,7 +50,7 @@ namespace AsmResolver.DotNet.Signatures
             }
         }
 
-        private bool SimpleTypeEquals(ITypeDescriptor x, ITypeDescriptor y)
+        private bool SimpleTypeEquals(ITypeDescriptor x, ITypeDescriptor y, in GenericContext xContext, in GenericContext yContext)
         {
             // Check the basic properties first.
             if (!x.IsTypeOf(y.Namespace, y.Name))
@@ -65,14 +66,18 @@ namespace AsmResolver.DotNet.Signatures
                 return x.Resolve() is { } definition1
                        && y.Resolve() is { } definition2
                        && Equals(definition1.Module!.Assembly, definition2.Module!.Assembly)
-                       && Equals(definition1.DeclaringType, definition2.DeclaringType);
+                       && Equals(definition1.DeclaringType, definition2.DeclaringType, xContext, yContext);
             }
 
             return false;
         }
 
         /// <inheritdoc />
-        public bool Equals(ITypeDefOrRef? x, ITypeDefOrRef? y) => Equals(x as ITypeDescriptor, y);
+        public bool Equals(ITypeDefOrRef? x, ITypeDefOrRef? y) => Equals(x, y, default, default);
+        public bool Equals(ITypeDefOrRef? x, ITypeDefOrRef? y, in GenericContext xContext, in GenericContext yContext)
+        {
+            return Equals(x as ITypeDescriptor, y, xContext, yContext);
+        }
 
         /// <inheritdoc />
         public int GetHashCode(ITypeDefOrRef obj) => obj.MetadataToken.Table == TableIndex.TypeSpec
@@ -80,40 +85,50 @@ namespace AsmResolver.DotNet.Signatures
             : SimpleTypeHashCode(obj);
 
         /// <inheritdoc />
-        public bool Equals(TypeDefinition? x, TypeDefinition? y) => Equals(x as ITypeDescriptor, y);
+        public bool Equals(TypeDefinition? x, TypeDefinition? y) => Equals(x, y, default, default);
+        public bool Equals(TypeDefinition? x, TypeDefinition? y, in GenericContext xContext, in GenericContext yContext)
+        {
+            return Equals(x as ITypeDescriptor, y, xContext, yContext);
+        }
 
         /// <inheritdoc />
         public int GetHashCode(TypeDefinition obj) => SimpleTypeHashCode(obj);
 
         /// <inheritdoc />
-        public bool Equals(TypeReference? x, TypeReference? y) => Equals(x as ITypeDescriptor, y);
+        public bool Equals(TypeReference? x, TypeReference? y) => Equals(x, y, default, default);
+        public bool Equals(TypeReference? x, TypeReference? y, in GenericContext xContext, in GenericContext yContext)
+        {
+            return Equals(x as ITypeDescriptor, y, xContext, yContext);
+        }
 
         /// <inheritdoc />
         public int GetHashCode(TypeReference obj) => SimpleTypeHashCode(obj);
 
         /// <inheritdoc />
-        public bool Equals(TypeSpecification? x, TypeSpecification? y)
+        public bool Equals(TypeSpecification? x, TypeSpecification? y) => Equals(x, y, default, default);
+        public bool Equals(TypeSpecification? x, TypeSpecification? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
             if (x is null || y is null)
                 return false;
 
-            return Equals(x.Signature, y.Signature);
+            return Equals(x.Signature, y.Signature, xContext, yContext);
         }
 
         /// <inheritdoc />
         public int GetHashCode(TypeSpecification obj) => obj.Signature is not null ? GetHashCode(obj.Signature) : 0;
 
         /// <inheritdoc />
-        public bool Equals(ExportedType? x, ExportedType? y)
+        public bool Equals(ExportedType? x, ExportedType? y) => Equals(x, y, default, default);
+        public bool Equals(ExportedType? x, ExportedType? y, in GenericContext xContext, in GenericContext yContext)
         {
             if (ReferenceEquals(x, y))
                 return true;
             if (x is null || y is null)
                 return false;
 
-            return Equals((ITypeDescriptor) x, y);
+            return Equals((ITypeDescriptor) x, y, xContext, yContext);
         }
 
         /// <inheritdoc />
